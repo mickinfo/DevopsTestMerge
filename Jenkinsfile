@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/MiguelAngelRamos/pruebasJunit5.git'
+                git branch: 'main', url: 'https://github.com/mickinfo/DevopsTestMerge.git'
             }
         }
 
