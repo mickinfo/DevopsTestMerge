@@ -35,42 +35,40 @@ pipeline {
             }
         }
 
-    stage('Sonar Scanner') {
-        steps {
-            script {
-                def sonarqubeScannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                withCredentials([string(credentialsId: 'sonar', variable: 'sonarLogin')]) {
-                    sh "${sonarqubeScannerHome}/bin/sonar-scanner -e -Dsonar.host.url=http://SonarQube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=gs-gradle -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=GS -Dsonar.sources=src/main/java/com/kibernumacademy/devops -Dsonar.tests=src/test/java/com/kibernumacademy/devops -Dsonar.language=java -Dsonar.java.binaries=."
+        stage('Sonar Scanner') {
+            steps {
+                script {
+                    def sonarqubeScannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withCredentials([string(credentialsId: 'sonar', variable: 'sonarLogin')]) {
+                        // Asegúrate de que las rutas a las fuentes y pruebas sean correctas
+                        sh "${sonarqubeScannerHome}/bin/sonar-scanner -Dsonar.host.url=http://SonarQube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=gs-gradle -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=GS -Dsonar.sources=src/main/java -Dsonar.tests=src/test/java -Dsonar.language=java -Dsonar.java.binaries=target/classes"
+                    }
                 }
             }
         }
-    }
 
-    //
-    stage('Nexus Upload') {
-        steps {
-            nexusArtifactUploader(
-                nexusVersion: 'nexus3',
-                protocol: 'http',
-                nexusUrl: 'nexus:8081',
-                groupId: 'com.kibernumacademy',
-                version: '0.0.1-SNAPSHOT',
-                repository: 'devops-kiber',
-                credentialsId: 'NexusLogin',
-                artifacts: [
-                    [artifactId: 'devops',
-                    classifier: '',
-                    file: 'target/devops-0.0.1.jar',
-                    type: 'jar'],
-                    [artifactId: 'devops',
-                    classifier: '',
-                    file: 'pom.xml',
-                    type: 'pom']
-                ]
-            )
+        stage('Nexus Upload') {
+            steps {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: 'nexus:8081',
+                    groupId: 'com.kibernumacademy',
+                    version: '0.0.1-SNAPSHOT',
+                    repository: 'devops-kiber',
+                    credentialsId: 'NexusLogin',
+                    artifacts: [
+                        [artifactId: 'devops',
+                        classifier: '',
+                        file: 'target/devops-0.0.1.jar',
+                        type: 'jar'],
+                        [artifactId: 'devops',
+                        classifier: '',
+                        file: 'pom.xml',
+                        type: 'pom']
+                    ]
+                )
+            }
         }
-    }
-
-    //
     }
 }
