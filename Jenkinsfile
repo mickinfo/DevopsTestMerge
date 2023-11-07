@@ -60,7 +60,7 @@ pipeline {
                     artifacts: [
                         [artifactId: 'devops',
                         classifier: '',
-                        file: 'target/devops-0.0.1.jar',
+                        file: 'target/devops-0.0.1-SNAPSHOT.jar',
                         type: 'jar'],
                         [artifactId: 'devops',
                         classifier: '',
